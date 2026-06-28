@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>נעמה בן אריה | פיתוח תוכנה</title>
+  <meta name="description" content="נעמה בן אריה – פיתוח מערכות, סוכני AI, אוטומציות ובדיקות איכות לעסקים ואנשים פרטיים." />
+
+  <style>
+    /* ===== TOKENS ===== */
+    :root {
+      --bg:        #0b0f1a;
+      --surface:   #111827;
+      --surface2:  #1a2235;
+      --border:    #1e2d45;
+      --accent:    #3b82f6;       /* electric blue */
+      --accent2:   #6366f1;       /* indigo */
+      --glow:      rgba(59,130,246,.18);
+      --text:      #e2e8f0;
+      --muted:     #8899b4;
+      --white:     #ffffff;
+      --radius:    12px;
+      --radius-lg: 20px;
+      --shadow:    0 4px 24px rgba(0,0,0,.45);
+      --font:      'Segoe UI', 'Noto Sans Hebrew', Arial, sans-serif;
+      --mono:      'Consolas', 'Courier New', monospace;
+      --transition: .3s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ===== RESET ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* ===== TYPOGRAPHY ===== */
+    h1, h2, h3, h4 { line-height: 1.25; font-weight: 700; }
+    h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); }
+    h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); }
+    h3 { font-size: 1.15rem; }
+    p  { color: var(--muted); }
+
+    /* ===== LAYOUT HELPERS ===== */
+    .container {
+      width: min(1140px, 100%);
+      margin-inline: auto;
+      padding-inline: 1.5rem;
+    }
+    .section {
+      padding-block: 6rem;
+    }
+    .section-label {
+      display: inline-block;
+      font-size: .75rem;
+      font-family: var(--mono);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--glow);
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      padding: .25rem .85rem;
+      margin-bottom: 1rem;
+    }
+    .section-heading {
+      color: var(--white);
+      margin-bottom: .75rem;
+    }
+    .section-sub {
+      max-width: 54ch;
+      margin-bottom: 3rem;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .75rem 1.75rem;
+      border-radius: var(--radius);
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: var(--white);
+      box-shadow: 0 0 24px var(--glow);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 40px rgba(99,102,241,.45);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--accent);
+      border: 1.5px solid var(--accent);
+    }
+    .btn-outline:hover {
+      background: var(--glow);
+      transform: translateY(-2px);
+    }
+
+    /* ===== GRID UTILITY ===== */
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    @media(max-width: 900px) { .grid-3 { grid-template-columns: repeat(2, 1fr); } }
+    @media(max-width: 600px) { .grid-3, .grid-2 { grid-template-columns: 1fr; } }
+
+    /* ===== CARD ===== */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+    .card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 40px var(--glow);
+    }
+
+    /* ========================================
+       NAVBAR
+    ======================================== */
+    #navbar {
+      position: fixed;
+      top: 0; inset-inline: 0;
+      z-index: 1000;
+      padding: 1rem 0;
+      transition: background var(--transition), box-shadow var(--transition);
+    }
+    #navbar.scrolled {
+      background: rgba(11,15,26,.92);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 1px 0 var(--border);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--white);
+      font-family: var(--mono);
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    .nav-links a {
+      font-size: .9rem;
+      color: var(--muted);
+      transition: color var(--transition);
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta { padding: .5rem 1.2rem; font-size: .85rem; }
+
+    /* Mobile hamburger */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: .25rem;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+    .nav-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-toggle.open span:nth-child(2) { opacity: 0; }
+    .nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    @media(max-width: 768px) {
+      .nav-toggle { display: flex; }
+      .nav-links {
+        position: fixed;
+        inset-block: 0;
+        inset-inline-end: 0;
+        width: min(280px, 85vw);
+        flex-direction: column;
+        align-items: flex-start;
+        background: var(--surface);
+        border-inline-start: 1px solid var(--border);
+        padding: 5rem 2rem 2rem;
+        gap: 1.5rem;
+        transform: translateX(-100%);
+        transition: transform var(--transition);
+        z-index: 999;
+      }
+      /* RTL: slide from left */
+      html[dir="rtl"] .nav-links { transform: translateX(100%); }
+      .nav-links.open { transform: translateX(0) !important; }
+      .nav-links a { font-size: 1.05rem; }
+    }
+
+    /* ========================================
+       HERO
+    ======================================== */
+    #hero {
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      padding-top: 5rem;
+      overflow: hidden;
+    }
+    /* Animated grid background */
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+      opacity: .35;
+    }
+    /* Glow orbs */
+    #hero::after {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59,130,246,.15) 0%, transparent 70%);
+      top: -100px;
+      inset-inline-end: -150px;
+      pointer-events: none;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: .35rem 1rem;
+      font-size: .8rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 8px #22c55e;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .4; }
+    }
+    .hero-title {
+      color: var(--white);
+      margin-bottom: 1.25rem;
+    }
+    .hero-title .gradient {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-desc {
+      font-size: 1.1rem;
+      max-width: 52ch;
+      margin-bottom: 2rem;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .hero-stats {
+      display: flex;
+      gap: 2.5rem;
+      margin-top: 3.5rem;
+      flex-wrap: wrap;
+    }
+    .stat-item strong {
+      display: block;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .stat-item span { font-size: .85rem; color: var(--muted); }
+
+    /* Floating code snippet decoration */
+    .hero-code {
+      position: absolute;
+      inset-inline-end: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      font-family: var(--mono);
+      font-size: .78rem;
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 340px;
+      box-shadow: var(--shadow);
+      z-index: 1;
+    }
+    .hero-code .kw  { color: var(--accent2); }
+    .hero-code .fn  { color: var(--accent); }
+    .hero-code .str { color: #34d399; }
+    .hero-code .cm  { color: #475569; }
+    @media(max-width: 1000px) { .hero-code { display: none; } }
+
+    /* ========================================
+       ABOUT
+    ======================================== */
+    #about { background: var(--surface); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    @media(max-width: 768px) { .about-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    .about-visual {
+      position: relative;
+    }
+    .about-avatar {
+      width: 100%;
+      max-width: 360px;
+      aspect-ratio: 1;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--surface2), var(--border));
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-avatar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(59,130,246,.15), transparent 60%);
+    }
+    .about-tag {
+      position: absolute;
+      bottom: -1rem;
+      inset-inline-start: -1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .75rem 1.25rem;
+      font-size: .85rem;
+      color: var(--white);
+      box-shadow: var(--shadow);
+    }
+    .about-tag strong { color: var(--accent); font-family: var(--mono); }
+    .tech-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-top: 1.5rem;
+    }
+    .pill {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: .3rem .85rem;
+      font-size: .78rem;
+      font-family: var(--mono);
+      color: var(--accent);
+    }
+
+    /* ========================================
+       SERVICES
+    ======================================== */
+    #services { background: var(--bg); }
+    .service-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius);
+      background: var(--glow);
+      border: 1px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.25rem;
+    }
+    .card h3 { color: var(--white); margin-bottom: .5rem; }
+
+    /* ========================================
+       WHY ME
+    ======================================== */
+    #why { background: var(--surface); }
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+    @media(max-width: 600px) { .why-grid { grid-template-columns: 1fr; } }
+    .why-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      transition: var(--transition);
+    }
+    .why-item:hover { border-color: var(--accent); }
+    .why-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+      margin-top: .15rem;
+    }
+    .why-item h4 { color: var(--white); margin-bottom: .3rem; }
+    .why-item p { font-size: .9rem; }
+
+    /* ========================================
+       PROCESS
+    ======================================== */
+    #process { background: var(--bg); }
+    .process-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      position: relative;
+    }
+    /* Connector line */
+    .process-steps::before {
+      content: '';
+      position: absolute;
+      top: 2.1rem;
+      inset-inline-start: calc(12.5% + .5rem);
+      inset-inline-end: calc(12.5% + .5rem);
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      opacity: .4;
+    }
+    @media(max-width: 768px) {
+      .process-steps { grid-template-columns: 1fr 1fr; }
+      .process-steps::before { display: none; }
+    }
+    @media(max-width: 480px) { .process-steps { grid-template-columns: 1fr; } }
+    .step-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      text-align: center;
+      position: relative;
+      transition: var(--transition);
+    }
+    .step-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+    .step-num {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: var(--white);
+      font-weight: 700;
+      font-family: var(--mono);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 20px var(--glow);
+    }
+    .step-card h3 { color: var(--white); margin-bottom: .4rem; font-size: 1rem; }
+    .step-card p { font-size: .85rem; }
+
+    /* ========================================
+       TESTIMONIALS
+    ======================================== */
+    #testimonials { background: var(--surface); }
+    .testimonial-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      position: relative;
+      transition: var(--transition);
+    }
+    .testimonial-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+    .quote-mark {
+      font-size: 3rem;
+      line-height: 1;
+      color: var(--accent);
+      opacity: .5;
+      font-family: Georgia, serif;
+      margin-bottom: .5rem;
+    }
+    .testimonial-card p {
+      color: var(--text);
+      font-size: .95rem;
+      margin-bottom: 1.25rem;
+    }
+    .reviewer {
+      display: flex;
+      align-items: center;
+      gap: .85rem;
+    }
+    .reviewer-avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--white);
+      font-size: .85rem;
+      flex-shrink: 0;
+    }
+    .reviewer-name { color: var(--white); font-weight: 600; font-size: .9rem; }
+    .reviewer-title { font-size: .8rem; }
+    .stars { color: #f59e0b; font-size: .85rem; margin-bottom: .75rem; }
+
+    /* ========================================
+       FAQ
+    ======================================== */
+    #faq { background: var(--bg); }
+    .faq-list { max-width: 760px; }
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: .75rem;
+      overflow: hidden;
+      transition: border-color var(--transition);
+    }
+    .faq-item.open { border-color: var(--accent); }
+    .faq-question {
+      width: 100%;
+      background: var(--surface);
+      border: none;
+      padding: 1.25rem 1.5rem;
+      text-align: right;
+      font-family: var(--font);
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--white);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      transition: background var(--transition);
+    }
+    .faq-question:hover { background: var(--surface2); }
+    .faq-arrow {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--glow);
+      border: 1px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: .7rem;
+      color: var(--accent);
+      transition: transform var(--transition);
+    }
+    .faq-item.open .faq-arrow { transform: rotate(180deg); }
+    .faq-answer {
+      background: var(--surface2);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .4s ease, padding .3s ease;
+    }
+    .faq-answer-inner { padding: 0 1.5rem 1.25rem; color: var(--muted); font-size: .9rem; }
+    .faq-item.open .faq-answer { max-height: 300px; }
+
+    /* ========================================
+       CONTACT
+    ======================================== */
+    #contact { background: var(--surface); }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 3rem;
+      align-items: start;
+    }
+    @media(max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } }
+    .contact-info h3 { color: var(--white); font-size: 1.3rem; margin-bottom: 1rem; }
+    .contact-detail {
+      display: flex;
+      align-items: center;
+      gap: .85rem;
+      margin-bottom: 1rem;
+      font-size: .9rem;
+    }
+    .contact-detail-icon {
+      width: 38px; height: 38px;
+      border-radius: var(--radius);
+      background: var(--glow);
+      border: 1px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .contact-detail span { color: var(--muted); }
+    /* Form */
+    .form-group { margin-bottom: 1.25rem; }
+    label {
+      display: block;
+      font-size: .85rem;
+      color: var(--muted);
+      margin-bottom: .4rem;
+    }
+    input, textarea, select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .8rem 1rem;
+      font-family: var(--font);
+      font-size: .95rem;
+      color: var(--white);
+      transition: border-color var(--transition), box-shadow var(--transition);
+      outline: none;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--glow);
+    }
+    textarea { resize: vertical; min-height: 120px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media(max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+
+    /* Success message */
+    #form-success {
+      display: none;
+      background: rgba(34,197,94,.1);
+      border: 1px solid #22c55e;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+    }
+    #form-success .success-icon { font-size: 2.5rem; margin-bottom: .75rem; }
+    #form-success h3 { color: #22c55e; margin-bottom: .5rem; }
+    #form-success p { font-size: .9rem; }
+
+    /* ========================================
+       FOOTER
+    ======================================== */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 3rem 0 1.5rem;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+    @media(max-width: 640px) { .footer-grid { grid-template-columns: 1fr; } }
+    .footer-brand p { font-size: .9rem; margin-top: .75rem; max-width: 28ch; }
+    .footer-col h4 { color: var(--white); font-size: .9rem; margin-bottom: 1rem; }
+    .footer-col a {
+      display: block;
+      color: var(--muted);
+      font-size: .875rem;
+      margin-bottom: .5rem;
+      transition: color var(--transition);
+    }
+    .footer-col a:hover { color: var(--accent); }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .8rem;
+      color: var(--muted);
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+    .footer-bottom a { color: var(--accent); }
+
+    /* ========================================
+       SCROLL REVEAL ANIMATION
+    ======================================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ===== SECTION DIVIDER ===== */
+    .divider {
+      width: 48px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      margin-bottom: 1.25rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================
+       NAVBAR
+  ======================================== -->
+  <nav id="navbar" aria-label="ניווט ראשי">
+    <div class="container nav-inner">
+      <a href="#hero" class="nav-logo">נעמה<span>.</span>dev</a>
+
+      <!-- Mobile toggle -->
+      <button class="nav-toggle" id="navToggle" aria-label="פתח תפריט" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <ul class="nav-links" id="navLinks" role="list">
+        <li><a href="#about">עליי</a></li>
+        <li><a href="#services">שירותים</a></li>
+        <li><a href="#why">למה אני?</a></li>
+        <li><a href="#process">תהליך עבודה</a></li>
+        <li><a href="#testimonials">המלצות</a></li>
+        <li><a href="#faq">שאלות</a></li>
+        <li><a href="#contact" class="btn btn-primary nav-cta">צרי קשר</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ========================================
+       HERO
+  ======================================== -->
+  <section id="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">זמינה לפרויקטים חדשים</div>
+
+        <h1 class="hero-title">
+          הופכת רעיונות<br>
+          ל<span class="gradient">מוצרים דיגיטליים</span><br>
+          שעובדים.
+        </h1>
+
+        <p class="hero-desc">
+          פיתוח מערכות מורכבות, סוכני AI חכמים ואוטומציות שמשנות את האופן שבו העסק שלך פועל — מהרעיון הראשון ועד השקה מלאה.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#contact" class="btn btn-primary">בואו נדבר ›</a>
+          <a href="#services" class="btn btn-outline">השירותים שלי</a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-item">
+            <strong>50+</strong>
+            <span>פרויקטים שהושלמו</span>
+          </div>
+          <div class="stat-item">
+            <strong>8+</strong>
+            <span>שנות ניסיון</span>
+          </div>
+          <div class="stat-item">
+            <strong>100%</strong>
+            <span>שביעות רצון לקוחות</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decorative floating code block -->
+    <div class="hero-code" aria-hidden="true">
+      <span class="cm">// בניית סוכן AI מותאם אישית</span><br>
+      <span class="kw">const</span> agent = <span class="kw">await</span> <span class="fn">createAgent</span>({<br>
+      &nbsp;&nbsp;name: <span class="str">"SmartAssistant"</span>,<br>
+      &nbsp;&nbsp;tools: [<span class="str">search</span>, <span class="str">analyze</span>],<br>
+      &nbsp;&nbsp;memory: <span class="kw">true</span>,<br>
+      });<br><br>
+      <span class="kw">await</span> agent.<span class="fn">run</span>(<span class="str">"optimize_workflow"</span>);<br>
+      <span class="cm">// ✓ תהליך מואץ ב-73%</span>
+    </div>
+  </section>
+
+  <!-- ========================================
+       ABOUT
+  ======================================== -->
+  <section id="about" class="section">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-visual">
+          <div class="about-avatar">👩‍💻</div>
+          <div class="about-tag">
+            <strong>&gt; 8yr</strong> ניסיון בפיתוח תוכנה
+          </div>
+        </div>
+
+        <div>
+          <span class="section-label">עליי</span>
+          <div class="divider"></div>
+          <h2 class="section-heading">היי, אני נעמה 👋</h2>
+          <p style="margin-bottom:1rem;">
+            מפתחת תוכנה עם ניסיון רב בבניית מוצרים דיגיטליים מורכבים לעסקים קטנים, בינוניים ואנשים פרטיים. אני מאמינה שטכנולוגיה טובה היא כזו שמרגישים — לא בגלל שהיא מורכבת, אלא בגלל שהיא פשוט עובדת.
+          </p>
+          <p style="margin-bottom:1.5rem;">
+            בין אם מדובר בפיתוח מערכת שלמה מאפס, אוטומציה שחוסכת שעות עבודה שבועיות, או סוכן AI שמבין את הצרכים הייחודיים של העסק שלך — אני כאן כדי להפוך את הרעיון שלך למציאות.
+          </p>
+          <div class="tech-pills">
+            <span class="pill">Python</span>
+            <span class="pill">Node.js</span>
+            <span class="pill">React</span>
+            <span class="pill">TypeScript</span>
+            <span class="pill">PostgreSQL</span>
+            <span class="pill">Docker</span>
+            <span class="pill">AWS</span>
+            <span class="pill">LangChain</span>
+            <span class="pill">FastAPI</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       SERVICES
+  ======================================== -->
+  <section id="services" class="section">
+    <div class="container">
+      <span class="section-label reveal">השירותים שלי</span>
+      <div class="divider reveal"></div>
+      <h2 class="section-heading reveal">מה אני יכולה לעשות עבורך</h2>
+      <p class="section-sub reveal">ממוצרים מלאים ועד פתרונות נקודתיים — כל פרויקט מקבל תשומת לב מלאה, קוד נקי, ותוצאה שאתה גאה בה.</p>
+
+      <div class="grid-2">
+        <!-- Service 1 -->
+        <article class="card reveal">
+          <div class="service-icon">🏗️</div>
+          <h3>פיתוח מערכות ואפליקציות מקצה לקצה</h3>
+          <p>אני מפתחת אפליקציות ומערכות מורכבות מרובות‑משתמשים — משלב הרעיון ועד מוצר עובד. כולל אפיון, ארכיטקטורה, פיתוח צד שרת ולקוח, אינטגרציות, אבטחה ו‑DevOps.</p>
+        </article>
+
+        <!-- Service 2 -->
+        <article class="card reveal">
+          <div class="service-icon">🤖</div>
+          <h3>פיתוח סוכני AI חכמים</h3>
+          <p>בניית סוכני AI מותאמים אישית שמבצעים משימות אוטומטיות, מפענחים מידע, משפרים תהליכים ומייצרים חוויית משתמש מתקדמת.</p>
+        </article>
+
+        <!-- Service 3 -->
+        <article class="card reveal">
+          <div class="service-icon">⚡</div>
+          <h3>אוטומציות ותהליכי עבודה דיגיטליים</h3>
+          <p>הטמעת אוטומציות שמפחיתות עבודה ידנית, משפרות יעילות ומאפשרות לעסק שלך לעבוד חכם ומהר יותר.</p>
+        </article>
+
+        <!-- Service 4 -->
+        <article class="card reveal">
+          <div class="service-icon">🧪</div>
+          <h3>בדיקות איכות (QA) והבטחת יציבות</h3>
+          <p>כתיבת בדיקות אוטומטיות, בדיקות ידניות, בדיקות עומסים ושיפור איכות המערכת לאורך זמן — כי מוצר יציב הוא לא מותרות, אלא בסיס.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       WHY ME
+  ======================================== -->
+  <section id="why" class="section">
+    <div class="container">
+      <span class="section-label reveal">למה לבחור בי</span>
+      <div class="divider reveal"></div>
+      <h2 class="section-heading reveal">יתרונות שמדברים בפני עצמם</h2>
+      <p class="section-sub reveal">לא רק מפתחת — שותפה אסטרטגית שמבינה את הצרכים שלך ונמצאת לצדך לאורך כל הדרך.</p>
+
+      <div class="why-grid">
+        <div class="why-item reveal">
+          <div class="why-icon">🎯</div>
+          <div>
+            <h4>פתרון מותאם אישית</h4>
+            <p>אין שני פרויקטים זהים. כל פתרון נבנה מאפס לפי הצרכים הייחודיים שלך, לא מתוך תבנית.</p>
+          </div>
+        </div>
+        <div class="why-item reveal">
+          <div class="why-icon">💬</div>
+          <div>
+            <h4>תקשורת שקופה ורציפה</h4>
+            <p>אתה תמיד יודע מה קורה. עדכונים שוטפים, דמו בזמן אמת, ושאלות — תמיד מקבלות מענה מהיר.</p>
+          </div>
+        </div>
+        <div class="why-item reveal">
+          <div class="why-icon">🚀</div>
+          <div>
+            <h4>העברה בזמן ובאיכות</h4>
+            <p>מחויבות אמיתית לעמוד בלוחות זמנים ולספק תוצאה ברמה הגבוהה ביותר.</p>
+          </div>
+        </div>
+        <div class="why-item reveal">
+          <div class="why-icon">🔒</div>
+          <div>
+            <h4>קוד מאובטח ומתוחזק</h4>
+            <p>כל שורת קוד נכתבת עם תשומת לב לאבטחה, ביצועים ותחזוקה עתידית.</p>
+          </div>
+        </div>
+        <div class="why-item reveal">
+          <div class="why-icon">🧠</div>
+          <div>
+            <h4>ידע עמוק ב-AI ואוטומציה</h4>
+            <p>אנחנו בעידן של AI — ואני מביאה את הידע הזה לכל פרויקט כדי לייצר ערך אמיתי.</p>
+          </div>
+        </div>
+        <div class="why-item reveal">
+          <div class="why-icon">🤝</div>
+          <div>
+            <h4>ליווי גם אחרי ההשקה</h4>
+            <p>לא נעלמת אחרי העברת הפרויקט. זמינה לתמיכה, שיפורים ותפעול שוטף.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       PROCESS
+  ======================================== -->
+  <section id="process" class="section">
+    <div class="container">
+      <span class="section-label reveal">תהליך עבודה</span>
+      <div class="divider reveal"></div>
+      <h2 class="section-heading reveal">מרעיון למוצר — ב-4 שלבים</h2>
+      <p class="section-sub reveal">תהליך עבודה ברור, שקוף ויעיל שמבטיח תוצאה איכותית בכל פרויקט.</p>
+
+      <div class="process-steps">
+        <div class="step-card reveal">
+          <div class="step-num">1</div>
+          <h3>פגישת היכרות ואפיון</h3>
+          <p>מבינים את הצרכים, המטרות ואת הקהל שלך. מגדירים יחד את הפתרון האידיאלי.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-num">2</div>
+          <h3>תכנון וארכיטקטורה</h3>
+          <p>מתכננים את המבנה הטכני, ממשק המשתמש, ומגדירים לוח זמנים ריאלי.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-num">3</div>
+          <h3>פיתוח ובדיקות</h3>
+          <p>פיתוח מהיר עם עדכונים שוטפים, בדיקות שוטפות ואיטרציות מבוססות פידבק.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-num">4</div>
+          <h3>השקה וליווי</h3>
+          <p>העברת המוצר, הדרכה ותמיכה מלאה גם לאחר ההשקה.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       TESTIMONIALS
+  ======================================== -->
+  <section id="testimonials" class="section">
+    <div class="container">
+      <span class="section-label reveal">המלצות לקוחות</span>
+      <div class="divider reveal"></div>
+      <h2 class="section-heading reveal">מה אומרים עליי</h2>
+      <p class="section-sub reveal">מילים של לקוחות שעבדו איתי ויכולים לספר מה הם קיבלו בפועל.</p>
+
+      <div class="grid-3">
+        <article class="testimonial-card reveal">
+          <div class="stars">★★★★★</div>
+          <div class="quote-mark">"</div>
+          <p>נעמה בנתה לנו מערכת ניהול מלאי שחסכה לנו עשרות שעות עבודה בחודש. היא הבינה בדיוק מה צריך, סיפקה בזמן ועם איכות שלא ציפינו. בהחלט נעבוד ביחד שוב.</p>
+          <div class="reviewer">
+            <div class="reviewer-avatar">ד"מ</div>
+            <div>
+              <div class="reviewer-name">דוד מזרחי</div>
+              <div class="reviewer-title">מנכ"ל, חברת לוגיסטיקה</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="testimonial-card reveal">
+          <div class="stars">★★★★★</div>
+          <div class="quote-mark">"</div>
+          <p>ביקשנו סוכן AI שיסייע לצוות התמיכה שלנו. מה שנעמה בנתה עלה על כל הציפיות — הסוכן מטפל ב-70% מהפניות באופן עצמאי. שינוי של ממש לעסק.</p>
+          <div class="reviewer">
+            <div class="reviewer-avatar">ש"כ</div>
+            <div>
+              <div class="reviewer-name">שירה כהן</div>
+              <div class="reviewer-title">VP Operations, סטארטאפ טכנולוגי</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="testimonial-card reveal">
+          <div class="stars">★★★★★</div>
+          <div class="quote-mark">"</div>
+          <p>עבדתי עם כמה מפתחים בעבר, אבל נעמה היא ברמה אחרת לגמרי. קוד נקי, תקשורת מעולה ותוצאה שהפתיעה אפילו אותי. ממליץ בחום לכל עסק.</p>
+          <div class="reviewer">
+            <div class="reviewer-avatar">א"ל</div>
+            <div>
+              <div class="reviewer-name">אייל לוי</div>
+              <div class="reviewer-title">יזם, מיזם SaaS</div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       FAQ
+  ======================================== -->
+  <section id="faq" class="section">
+    <div class="container">
+      <span class="section-label reveal">שאלות נפוצות</span>
+      <div class="divider reveal"></div>
+      <h2 class="section-heading reveal">שאלות שכולם שואלים</h2>
+      <p class="section-sub reveal">לא מצאת תשובה? שלחי לי הודעה ואשמח לענות.</p>
+
+      <div class="faq-list">
+        <div class="faq-item reveal">
+          <button class="faq-question" aria-expanded="false">
+            כמה זמן לוקח פרויקט ממוצע?
+            <span class="faq-arrow">▼</span>
+          </button>
+          <div class="faq-answer" role="region">
+            <div class="faq-answer-inner">
+              זה תלוי מאוד בהיקף הפרויקט. MVP פשוט יכול להיות מוכן תוך 3–6 שבועות, בעוד שמערכת מורכבת עם ריבוי משתמשים ואינטגרציות רבות יכולה לקחת 3–6 חודשים. אני תמיד מציגה לוח זמנים ריאלי לפני שמתחילים.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" aria-expanded="false">
+            מה עולה לפתח אפליקציה?
+            <span class="faq-arrow">▼</span>
+          </button>
+          <div class="faq-answer" role="region">
+            <div class="faq-answer-inner">
+              המחיר משתנה בהתאם לסוג הפרויקט, לטכנולוגיות הנדרשות ולהיקף הפיצ'רים. אני עובדת גם במודל של תשלום לפי פרויקט וגם לפי שעה. בפגישת האפיון אנחנו מגדירים יחד מה הצרכים ומגיעים להצעת מחיר ברורה ושקופה.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" aria-expanded="false">
+            האם אפשר לקבל עדכונים שוטפים על התקדמות הפרויקט?
+            <span class="faq-arrow">▼</span>
+          </button>
+          <div class="faq-answer" role="region">
+            <div class="faq-answer-inner">
+              בהחלט. שקיפות היא ערך מרכזי שלי. כל פרויקט מנוהל עם לוח מעקב שנגיש ללקוח, ואנחנו נקבעים לפגישות שבועיות קצרות לעדכון ודמו. בנוסף, אני זמינה בווצאפ לכל שאלה ביניים.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" aria-expanded="false">
+            מה קורה אחרי שהפרויקט מסתיים?
+            <span class="faq-arrow">▼</span>
+          </button>
+          <div class="faq-answer" role="region">
+            <div class="faq-answer-inner">
+              אני מציעה חבילות תמיכה חודשיות הכוללות תחזוקה שוטפת, תיקוני באגים ועדכוני אבטחה. גם אחרי ההשקה, אני לא נעלמת — אנחנו ממשיכים לעבוד יחד לפי הצורך.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" aria-expanded="false">
+            האם את עובדת עם עסקים קטנים ואנשים פרטיים?
+            <span class="faq-arrow">▼</span>
+          </button>
+          <div class="faq-answer" role="region">
+            <div class="faq-answer-inner">
+              כן בהחלט. חלק גדול מהלקוחות שלי הם יזמים בתחילת הדרך, עסקים קטנים ובינוניים ואנשים פרטיים עם רעיון שרוצים להפוך למוצר. אני מאמינה שכל עסק, בכל גודל, מגיע לפתרון טכנולוגי טוב.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       CONTACT
+  ======================================== -->
+  <section id="contact" class="section">
+    <div class="container">
+      <span class="section-label reveal">צרי קשר</span>
+      <div class="divider reveal"></div>
+      <h2 class="section-heading reveal">בואו נדבר על הפרויקט שלך</h2>
+      <p class="section-sub reveal">ממלאים את הטופס, ואני חוזרת תוך יום עסקים אחד.</p>
+
+      <div class="contact-grid">
+        <!-- Contact Info -->
+        <div class="reveal">
+          <h3>פרטי קשר</h3>
+          <div class="contact-detail">
+            <div class="contact-detail-icon">📧</div>
+            <div>
+              <div style="color:var(--white);font-weight:600;">אימייל</div>
+              <span>naama@benaryeh.dev</span>
+            </div>
+          </div>
+          <div class="contact-detail">
+            <div class="contact-detail-icon">📱</div>
+            <div>
+              <div style="color:var(--white);font-weight:600;">טלפון / ווצאפ</div>
+              <span>050-000-0000</span>
+            </div>
+          </div>
+          <div class="contact-detail">
+            <div class="contact-detail-icon">🌍</div>
+            <div>
+              <div style="color:var(--white);font-weight:600;">זמינות</div>
+              <span>ישראל + מרחוק, א'–ה' 09:00–18:00</span>
+            </div>
+          </div>
+          <div class="contact-detail">
+            <div class="contact-detail-icon">⏱️</div>
+            <div>
+              <div style="color:var(--white);font-weight:600;">זמן תגובה</div>
+              <span>עד יום עסקים אחד</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="reveal">
+          <form id="contactForm" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">שם מלא *</label>
+                <input type="text" id="name" name="name" placeholder="ישראל ישראלי" required />
+              </div>
+              <div class="form-group">
+                <label for="email">אימייל *</label>
+                <input type="email" id="email" name="email" placeholder="you@example.com" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="phone">טלפון</label>
+              <input type="tel" id="phone" name="phone" placeholder="050-000-0000" />
+            </div>
+            <div class="form-group">
+              <label for="service">סוג השירות המבוקש</label>
+              <select id="service" name="service">
+                <option value="">בחרי שירות...</option>
+                <option>פיתוח מערכות ואפליקציות</option>
+                <option>פיתוח סוכן AI</option>
+                <option>אוטומציות ותהליכי עבודה</option>
+                <option>בדיקות איכות (QA)</option>
+                <option>אחר / ייעוץ</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message">ספרי לי על הפרויקט *</label>
+              <textarea id="message" name="message" placeholder="מה הרעיון? מה הצורך? כמה שיותר פרטים, כך אוכל לתת מענה מדויק יותר." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">
+              שלחי הודעה ›
+            </button>
+          </form>
+
+          <!-- Success message (hidden by default) -->
+          <div id="form-success" role="alert">
+            <div class="success-icon">✅</div>
+            <h3>ההודעה נשלחה בהצלחה!</h3>
+            <p>תודה שפנית אליי. אחזור אליך תוך יום עסקים אחד.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+       FOOTER
+  ======================================== -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo" style="font-size:1.2rem;">נעמה<span style="color:var(--accent);">.</span>dev</div>
+          <p>פיתוח תוכנה מקצועי — מוצרים, AI ואוטומציות שעובדות בשביל העסק שלך.</p>
+        </div>
+        <div class="footer-col">
+          <h4>ניווט מהיר</h4>
+          <a href="#about">עליי</a>
+          <a href="#services">שירותים</a>
+          <a href="#why">למה אני?</a>
+          <a href="#process">תהליך עבודה</a>
+          <a href="#testimonials">המלצות</a>
+          <a href="#faq">שאלות נפוצות</a>
+        </div>
+        <div class="footer-col">
+          <h4>צרי קשר</h4>
+          <a href="mailto:naama@benaryeh.dev">naama@benaryeh.dev</a>
+          <a href="tel:+972500000000">050-000-0000</a>
+          <a href="#contact">טופס יצירת קשר</a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 נעמה בן אריה. כל הזכויות שמורות.</span>
+        <span>עוצב ופותח ב ❤️ &nbsp;בישראל</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================
+       JAVASCRIPT
+  ======================================== -->
+  <script>
+    /* ---- Navbar scroll effect ---- */
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+    }, { passive: true });
+
+    /* ---- Mobile menu toggle ---- */
+    const navToggle = document.getElementById('navToggle');
+    const navLinks  = document.getElementById('navLinks');
+
+    navToggle.addEventListener('click', () => {
+      const isOpen = navLinks.classList.toggle('open');
+      navToggle.classList.toggle('open', isOpen);
+      navToggle.setAttribute('aria-expanded', isOpen);
+    });
+
+    // Close menu when a nav link is clicked
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+        navToggle.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    /* ---- Scroll reveal animation ---- */
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    );
+    revealEls.forEach(el => revealObserver.observe(el));
+
+    /* ---- FAQ accordion ---- */
+    document.querySelectorAll('.faq-question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item   = btn.closest('.faq-item');
+        const isOpen = item.classList.contains('open');
+
+        // Close all
+        document.querySelectorAll('.faq-item').forEach(i => {
+          i.classList.remove('open');
+          i.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+        });
+
+        // Open clicked (if it wasn't already open)
+        if (!isOpen) {
+          item.classList.add('open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    /* ---- Contact form with success message ---- */
+    const form    = document.getElementById('contactForm');
+    const success = document.getElementById('form-success');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Basic validation
+      const name    = form.name.value.trim();
+      const email   = form.email.value.trim();
+      const message = form.message.value.trim();
+
+      if (!name || !email || !message) {
+        // Shake fields that are empty
+        [form.name, form.email, form.message].forEach(field => {
+          if (!field.value.trim()) {
+            field.style.borderColor = '#ef4444';
+            field.style.boxShadow   = '0 0 0 3px rgba(239,68,68,.2)';
+            setTimeout(() => {
+              field.style.borderColor = '';
+              field.style.boxShadow   = '';
+            }, 2000);
+          }
+        });
+        return;
+      }
+
+      // Simulate send (no real submission)
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.textContent = 'שולחת...';
+      submitBtn.disabled = true;
+
+      setTimeout(() => {
+        form.style.display    = 'none';
+        success.style.display = 'block';
+      }, 900);
+    });
+
+    /* ---- Smooth scroll for anchor links (fallback for older browsers) ---- */
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
