@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>נעמה בן אריה - פיתוח תוכנה וסוכני AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* בסיס עיצוב */
+        :root {
+            --bg-main: #050814;
+            --bg-alt: #0b1020;
+            --bg-card: #11182a;
+            --accent: #3fd0c9;
+            --accent-soft: rgba(63, 208, 201, 0.12);
+            --accent-strong: #7c5cff;
+            --text-main: #f5f7ff;
+            --text-muted: #a7b0c7;
+            --border-soft: #1c2438;
+            --danger: #ff4f6a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top left, #151a2c 0, #050814 45%, #02030a 100%);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        /* Layout */
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        section {
+            padding: 4.5rem 0;
+            position: relative;
+        }
+
+        section::before {
+            content: "";
+            position: absolute;
+            inset-inline-start: 0;
+            inset-block-start: 0;
+            width: 3px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--accent), transparent);
+            opacity: 0.4;
+        }
+
+        .section-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.9rem;
+            margin: 0 0 0.4rem;
+            letter-spacing: 0.03em;
+        }
+
+        .section-subtitle {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Header & Nav */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(14px);
+            background: linear-gradient(to left, rgba(5, 8, 20, 0.92), rgba(5, 8, 20, 0.96));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .logo-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 20%, var(--accent-strong), var(--accent));
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08),
+                        0 0 18px rgba(63, 208, 201, 0.55);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-mark::after {
+            content: "";
+            position: absolute;
+            inset: 6px;
+            border-radius: inherit;
+            border: 1px solid rgba(5, 8, 20, 0.6);
+        }
+
+        .logo-text-main {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .logo-text-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .nav-link {
+            position: relative;
+            padding-block: 0.25rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.2s ease;
+        }
+
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            inset-inline-start: 0;
+            inset-block-end: -0.35rem;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(to left, var(--accent), var(--accent-strong));
+            transition: width 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-main);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            padding: 0.45rem 1rem;
+            border-radius: 999px;
+            border: 1px solid rgba(63, 208, 201, 0.6);
+            background: radial-gradient(circle at top, rgba(63, 208, 201, 0.18), rgba(5, 8, 20, 0.9));
+            color: var(--accent);
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+            background: radial-gradient(circle at top, rgba(63, 208, 201, 0.25), rgba(5, 8, 20, 0.95));
+        }
+
+        .nav-cta-icon {
+            font-size: 1rem;
+        }
+
+        /* Mobile nav */
+        .mobile-toggle {
+            display: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(10, 14, 28, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .mobile-toggle span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--text-main);
+            border-radius: 999px;
+            position: relative;
+            transition: background 0.2s ease;
+        }
+
+        .mobile-toggle span::before,
+        .mobile-toggle span::after {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 2px;
+            background: var(--text-main);
+            border-radius: 999px;
+            transition: transform 0.2s ease, top 0.2s ease;
+        }
+
+        .mobile-toggle span::before {
+            top: -5px;
+        }
+
+        .mobile-toggle span::after {
+            top: 5px;
+        }
+
+        .mobile-toggle.open span {
+            background: transparent;
+        }
+
+        .mobile-toggle.open span::before {
+            transform: rotate(40deg);
+            top: 0;
+        }
+
+        .mobile-toggle.open span::after {
+            transform: rotate(-40deg);
+            top: 0;
+        }
+
+        .nav-links-mobile {
+            display: none;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            background: linear-gradient(to left, rgba(5, 8, 20, 0.98), rgba(5, 8, 20, 0.96));
+        }
+
+        .nav-links-mobile .nav-link {
+            font-size: 0.95rem;
+        }
+
+        .nav-links-mobile .nav-cta {
+            width: 100%;
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+
+        /* Hero */
+        .hero {
+            padding-top: 3.5rem;
+            padding-bottom: 4.5rem;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .hero-main-title {
+            font-size: clamp(2.1rem, 3vw, 2.6rem);
+            margin: 0 0 0.75rem;
+            letter-spacing: 0.04em;
+        }
+
+        .hero-highlight {
+            background: linear-gradient(to left, var(--accent), var(--accent-strong));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-subtitle {
+            margin: 0 0 1.5rem;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .hero-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .hero-tag {
+            padding: 0.25rem 0.7rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(10, 14, 28, 0.9);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .hero-tag-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: var(--accent);
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            border-radius: 999px;
+            padding: 0.7rem 1.4rem;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-strong), var(--accent));
+            color: #050814;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.55);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.65);
+        }
+
+        .btn-secondary {
+            background: rgba(10, 14, 28, 0.95);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(15, 20, 36, 0.98);
+            transform: translateY(-1px);
+        }
+
+        .btn-icon {
+            font-size: 1rem;
+        }
+
+        .hero-note {
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .hero-note strong {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .hero-card {
+            position: relative;
+            border-radius: 1.2rem;
+            padding: 1.4rem 1.3rem;
+            background: radial-gradient(circle at top, rgba(63, 208, 201, 0.18), rgba(11, 16, 32, 0.98));
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+            overflow: hidden;
+        }
+
+        .hero-card::before {
+            content: "";
+            position: absolute;
+            inset-inline-start: -40%;
+            inset-block-start: -40%;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(124, 92, 255, 0.35), transparent 60%);
+            opacity: 0.7;
+        }
+
+        .hero-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.1rem;
+        }
+
+        .hero-card-title {
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .hero-card-status {
+            font-size: 0.8rem;
+            color: var(--accent);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .hero-card-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--accent);
+            box-shadow: 0 0 12px rgba(63, 208, 201, 0.9);
+            animation: pulse 1.8s infinite;
+        }
+
+        .hero-card-main {
+            margin-bottom: 1.1rem;
+        }
+
+        .hero-card-main h2 {
+            margin: 0 0 0.4rem;
+            font-size: 1.1rem;
+        }
+
+        .hero-card-main p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .hero-card-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .metric {
+            padding: 0.6rem 0.7rem;
+            border-radius: 0.8rem;
+            background: rgba(5, 8, 20, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .metric-value {
+            font-size: 0.95rem;
+            margin-top: 0.15rem;
+        }
+
+        .metric-value span {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .hero-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .hero-card-footer strong {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .hero-card-chip {
+            padding: 0.25rem 0.7rem;
+            border-radius: 999px;
+            background: rgba(5, 8, 20, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .hero-card-chip-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: var(--accent-strong);
+        }
+
+        /* Cards & grids */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1.5rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            padding: 1.3rem 1.2rem;
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset-inline-start: -40%;
+            inset-block-start: -40%;
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(63, 208, 201, 0.18), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.18s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+            border-color: rgba(63, 208, 201, 0.45);
+            background: linear-gradient(135deg, #11182a, #0b1020);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.8rem;
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+
+        .card-title {
+            margin: 0 0 0.4rem;
+            font-size: 1rem;
+        }
+
+        .card-text {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .card-list {
+            margin: 0.8rem 0 0;
+            padding: 0;
+            list-style: none;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .card-list li {
+            margin-bottom: 0.35rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.35rem;
+        }
+
+        .card-list-bullet {
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: var(--accent);
+            margin-top: 0.25rem;
+        }
+
+        /* About */
+        .about-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .about-text p {
+            margin: 0 0 0.9rem;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .about-highlight {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 0.5rem;
+        }
+
+        .about-pill {
+            padding: 0.35rem 0.8rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(10, 14, 28, 0.9);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .about-card {
+            background: var(--bg-alt);
+            border-radius: 1rem;
+            padding: 1.1rem 1rem;
+            border: 1px solid var(--border-soft);
+        }
+
+        .about-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.7rem;
+            font-size: 0.85rem;
+        }
+
+        .about-card-row span:first-child {
+            color: var(--text-muted);
+        }
+
+        .about-card-row span:last-child {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* Services */
+        .services-note {
+            margin-top: -1.2rem;
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Advantages */
+        .advantages-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1.3rem;
+        }
+
+        .advantage {
+            padding: 1.1rem 1rem;
+            border-radius: 1rem;
+            background: var(--bg-alt);
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 12px 26px rgba(0, 0, 0, 0.45);
+        }
+
+        .advantage-title {
+            margin: 0 0 0.4rem;
+            font-size: 0.95rem;
+        }
+
+        .advantage-text {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Process */
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1.2rem;
+        }
+
+        .step {
+            position: relative;
+            padding: 1rem 0.9rem;
+            border-radius: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-soft);
+        }
+
+        .step-number {
+            width: 26px;
+            height: 26px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .step-title {
+            margin: 0 0 0.35rem;
+            font-size: 0.9rem;
+        }
+
+        .step-text {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Testimonials */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1.3rem;
+        }
+
+        .testimonial {
+            padding: 1.1rem 1rem;
+            border-radius: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-soft);
+            position: relative;
+        }
+
+        .testimonial-quote {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            margin: 0 0 0.7rem;
+        }
+
+        .testimonial-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .testimonial-meta strong {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .testimonial-badge {
+            position: absolute;
+            inset-inline-start: 1rem;
+            inset-block-start: 1rem;
+            font-size: 1.2rem;
+            color: rgba(63, 208, 201, 0.6);
+        }
+
+        /* FAQ */
+        .faq-list {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+            gap: 1.5rem;
+        }
+
+        .faq-item {
+            border-radius: 0.9rem;
+            border: 1px solid var(--border-soft);
+            background: var(--bg-card);
+            padding: 0.9rem 0.9rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .faq-question {
+            font-size: 0.9rem;
+            margin: 0 0 0.35rem;
+        }
+
+        .faq-answer {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Contact */
+        .contact-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .contact-info {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .contact-info-row {
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-info-row strong {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .contact-highlight {
+            margin-top: 1rem;
+            padding: 0.8rem 0.9rem;
+            border-radius: 0.9rem;
+            background: var(--bg-alt);
+            border: 1px solid var(--border-soft);
+            font-size: 0.85rem;
+        }
+
+        form {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            padding: 1.4rem 1.3rem;
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        .form-row {
+            margin-bottom: 0.9rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 0.55rem 0.6rem;
+            border-radius: 0.6rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(5, 8, 20, 0.95);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: rgba(63, 208, 201, 0.7);
+            box-shadow: 0 0 0 1px rgba(63, 208, 201, 0.4);
+            background: rgba(5, 8, 20, 0.98);
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .form-note {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .form-actions {
+            margin-top: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            align-items: center;
+        }
+
+        .form-success {
+            display: none;
+            margin-top: 0.8rem;
+            padding: 0.7rem 0.8rem;
+            border-radius: 0.8rem;
+            background: rgba(63, 208, 201, 0.12);
+            border: 1px solid rgba(63, 208, 201, 0.6);
+            font-size: 0.85rem;
+            color: var(--accent);
+        }
+
+        .form-success strong {
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 1.5rem 0 2rem;
+            background: linear-gradient(to left, #050814, #050814);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .footer-layout {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .footer-link {
+            cursor: pointer;
+        }
+
+        .footer-link:hover {
+            color: var(--accent);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.15);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            animation: fadeInUp 0.7s ease forwards;
+        }
+
+        .fade-in-delayed {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.15s;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .hero-grid,
+            .about-layout,
+            .contact-layout,
+            .faq-list {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .hero {
+                padding-top: 2.5rem;
+            }
+
+            .hero-card {
+                margin-top: 1.5rem;
+            }
+
+            .grid-3,
+            .advantages-grid,
+            .testimonials-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .process-steps {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 700px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .nav-links-mobile.open {
+                display: flex;
+            }
+
+            .grid-3,
+            .advantages-grid,
+            .testimonials-grid,
+            .process-steps {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            section {
+                padding: 3.5rem 0;
+            }
+
+            .hero {
+                padding-bottom: 3.5rem;
+            }
+
+            .footer-layout {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="nav">
+        <div class="logo">
+            <div class="logo-mark"></div>
+            <div>
+                <div class="logo-text-main">נעמה בן אריה</div>
+                <div class="logo-text-sub">פיתוח תוכנה וסוכני AI</div>
+            </div>
+        </div>
+        <div class="nav-links">
+            <button class="nav-link" data-scroll="hero">ראשי</button>
+            <button class="nav-link" data-scroll="about">עליי</button>
+            <button class="nav-link" data-scroll="services">שירותים</button>
+            <button class="nav-link" data-scroll="advantages">יתרונות</button>
+            <button class="nav-link" data-scroll="process">תהליך עבודה</button>
+            <button class="nav-link" data-scroll="testimonials">המלצות</button>
+            <button class="nav-link" data-scroll="faq">שאלות נפוצות</button>
+            <button class="nav-link" data-scroll="contact">יצירת קשר</button>
+            <button class="nav-cta" data-scroll="contact">
+                <span class="nav-cta-icon">✉️</span>
+                <span>דברו איתי</span>
+            </button>
+        </div>
+        <button class="mobile-toggle" id="mobileToggle" aria-label="תפריט">
+            <span></span>
+        </button>
+    </nav>
+    <div class="nav-links-mobile" id="mobileNav">
+        <button class="nav-link" data-scroll="hero">ראשי</button>
+        <button class="nav-link" data-scroll="about">עליי</button>
+        <button class="nav-link" data-scroll="services">שירותים</button>
+        <button class="nav-link" data-scroll="advantages">יתרונות</button>
+        <button class="nav-link" data-scroll="process">תהליך עבודה</button>
+        <button class="nav-link" data-scroll="testimonials">המלצות</button>
+        <button class="nav-link" data-scroll="faq">שאלות נפוצות</button>
+        <button class="nav-link" data-scroll="contact">יצירת קשר</button>
+        <button class="nav-cta" data-scroll="contact">
+            <span class="nav-cta-icon">⚡</span>
+            <span>תיאום שיחה</span>
+        </button>
+    </div>
+</header>
+
+<main>
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="container hero-grid fade-in">
+            <div>
+                <h1 class="hero-main-title">
+                    פיתוח מערכות וסוכני <span class="hero-highlight">AI</span> שמקדמים את העסק שלך קדימה
+                </h1>
+                <p class="hero-subtitle">
+                    אני נעמה בן אריה, מפתחת תוכנה וסוכני AI. אני בונה מערכות ואפליקציות מקצה לקצה,
+                    מפתחת סוכני AI חכמים ומטמיעה אוטומציות שמאפשרות לעסק שלך לעבוד חכם, יציב ומהר יותר.
+                </p>
+                <div class="hero-tags">
+                    <div class="hero-tag">
+                        <span class="hero-tag-dot"></span>
+                        <span>פיתוח מקצה לקצה</span>
+                    </div>
+                    <div class="hero-tag">
+                        <span class="hero-tag-dot"></span>
+                        <span>סוכני AI מותאמים אישית</span>
+                    </div>
+                    <div class="hero-tag">
+                        <span class="hero-tag-dot"></span>
+                        <span>אוטומציות ותהליכי עבודה</span>
+                    </div>
+                    <div class="hero-tag">
+                        <span class="hero-tag-dot"></span>
+                        <span>בדיקות איכות ויציבות</span>
+                    </div>
+                </div>
+                <div class="hero-actions">
+                    <button class="btn-primary" data-scroll="contact">
+                        <span>שיחת היכרות ללא התחייבות</span>
+                        <span class="btn-icon">→</span>
+                    </button>
+                    <button class="btn-secondary" data-scroll="services">
+                        <span>צפו בשירותים</span>
+                    </button>
+                </div>
+                <p class="hero-note">
+                    <strong>קהל היעד:</strong> עסקים ואנשים פרטיים שרוצים פתרונות טכנולוגיים חכמים, יציבים ומותאמים אישית.
+                </p>
+            </div>
+            <aside class="hero-card fade-in-delayed">
+                <div class="hero-card-header">
+                    <div class="hero-card-title">Project Snapshot</div>
+                    <div class="hero-card-status">
+                        <span class="hero-card-status-dot"></span>
+                        <span>זמינות לפרויקטים נבחרים</span>
+                    </div>
+                </div>
+                <div class="hero-card-main">
+                    <h2>שותפה טכנולוגית לעסק שלך</h2>
+                    <p>
+                        ליווי אישי משלב הרעיון ועד מוצר עובד: אפיון, ארכיטקטורה, פיתוח, בדיקות, אוטומציות וסוכני AI
+                        שמחוברים לתהליכים האמיתיים של העסק שלך.
+                    </p>
+                </div>
+                <div class="hero-card-metrics">
+                    <div class="metric">
+                        <div class="metric-label">סוגי פרויקטים</div>
+                        <div class="metric-value">
+                            <span>מערכות, אפליקציות, סוכני AI</span>
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">אופי העבודה</div>
+                        <div class="metric-value">
+                            <span>מקצה לקצה או לפי צורך</span>
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">התמקדות</div>
+                        <div class="metric-value">
+                            <span>יציבות, חוויית משתמש, יעילות</span>
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">קהל יעד</div>
+                        <div class="metric-value">
+                            <span>עסקים + אנשים פרטיים</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-card-footer">
+                    <div>
+                        <strong>בואו נבנה יחד פתרון חכם</strong><br>
+                        שמתאים בדיוק לאיך שאתם עובדים.
+                    </div>
+                    <div class="hero-card-chip">
+                        <span class="hero-card-chip-dot"></span>
+                        <span>פיתוח תוכנה &amp; AI</span>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container fade-in">
+            <div class="section-header">
+                <h2 class="section-title">עליי</h2>
+                <p class="section-subtitle">מי אני, איך אני עובדת ומה חשוב לי בכל פרויקט</p>
+            </div>
+            <div class="about-layout">
+                <div class="about-text">
+                    <p>
+                        אני נעמה בן אריה, מפתחת תוכנה וסוכני AI, עם תשוקה אמיתית לחיבור בין טכנולוגיה לבין צרכים עסקיים
+                        אמיתיים. אני אוהבת לקחת רעיון, לפרק אותו לצרכים, לתכנן ארכיטקטורה נכונה – ולהפוך אותו למערכת
+                        יציבה, נעימה לשימוש ויעילה.
+                    </p>
+                    <p>
+                        אני עובדת עם עסקים ואנשים פרטיים, ומאמינה בשקיפות מלאה, בתקשורת ברורה ובבניית פתרונות
+                        שמשרתים אתכם לאורך זמן. בין אם מדובר במערכת מורכבת, סוכן AI חכם או אוטומציה שמפנה לכם זמן –
+                        המטרה שלי היא שתהיו רגועים שהטכנולוגיה עובדת בשבילכם.
+                    </p>
+                    <div class="about-highlight">
+                        <div class="about-pill">פיתוח מקצה לקצה</div>
+                        <div class="about-pill">חשיבה מערכתית</div>
+                        <div class="about-pill">שילוב AI בתהליכים קיימים</div>
+                        <div class="about-pill">דגש על איכות ויציבות</div>
+                    </div>
+                </div>
+                <aside class="about-card">
+                    <div class="about-card-row">
+                        <span>סגנון עבודה</span>
+                        <span>ליווי אישי, שיתוף מלא</span>
+                    </div>
+                    <div class="about-card-row">
+                        <span>סוגי לקוחות</span>
+                        <span>עסקים + פרטיים</span>
+                    </div>
+                    <div class="about-card-row">
+                        <span>התמקדות טכנולוגית</span>
+                        <span>מערכות, אפליקציות, AI</span>
+                    </div>
+                    <div class="about-card-row">
+                        <span>ערכים מובילים</span>
+                        <span>אמינות, יציבות, בהירות</span>
+                    </div>
+                    <div class="about-card-row">
+                        <span>שיתוף פעולה</span>
+                        <span>תכנון יחד, החלטות יחד</span>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services">
+        <div class="container fade-in">
+            <div class="section-header">
+                <h2 class="section-title">שירותים</h2>
+                <p class="section-subtitle">פתרונות טכנולוגיים חכמים לעסקים ולאנשים פרטיים</p>
+            </div>
+            <p class="services-note">
+                כל שירות ניתן כפרויקט מקצה לקצה או כחלק מתהליך קיים – בהתאם לצורך שלכם.
+            </p>
+            <div class="grid-3">
+                <article class="card">
+                    <div class="card-icon">🧩</div>
+                    <h3 class="card-title">פיתוח מערכות ואפליקציות מקצה לקצה</h3>
+                    <p class="card-text">
+                        פיתוח מערכות ואפליקציות מורכבות מרובות משתמשים – משלב הרעיון ועד מוצר עובד, כולל אפיון,
+                        ארכיטקטורה, פיתוח צד שרת ולקוח, אינטגרציות, אבטחה ו-DevOps.
+                    </p>
+                    <ul class="card-list">
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>אפיון צרכים ותכנון חוויית משתמש</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>ארכיטקטורה יציבה וסקיילבילית</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>פיתוח צד שרת וצד לקוח</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>אינטגרציות למערכות קיימות</span>
+                        </li>
+                    </ul>
+                </article>
+
+                <article class="card">
+                    <div class="card-icon">🤖</div>
+                    <h3 class="card-title">פיתוח סוכני AI חכמים</h3>
+                    <p class="card-text">
+                        בניית סוכני AI מותאמים אישית שמבצעים משימות אוטומטיות, מפענחים מידע, משפרים תהליכים ומייצרים
+                        חוויית משתמש מתקדמת.
+                    </p>
+                    <ul class="card-list">
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>סוכנים שמבינים את השפה והתהליכים שלכם</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>אוטומציה של משימות חוזרות</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>ניתוח מידע ותובנות בזמן אמת</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>שילוב סוכני AI במערכות קיימות</span>
+                        </li>
+                    </ul>
+                </article>
+
+                <article class="card">
+                    <div class="card-icon">⚙️</div>
+                    <h3 class="card-title">אוטומציות ותהליכי עבודה דיגיטליים</h3>
+                    <p class="card-text">
+                        הטמעת אוטומציות שמפחיתות עבודה ידנית, משפרות יעילות ומאפשרות לעסק שלך לעבוד חכם ומהר יותר.
+                    </p>
+                    <ul class="card-list">
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>מיפוי תהליכים ידניים והפיכתם לדיגיטליים</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>חיבור בין מערכות וכלים שונים</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>התראות, דוחות ותהליכי אישור אוטומטיים</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>שיפור זמני תגובה וחוויית לקוח</span>
+                        </li>
+                    </ul>
+                </article>
+
+                <article class="card">
+                    <div class="card-icon">✅</div>
+                    <h3 class="card-title">בדיקות איכות (QA) והבטחת יציבות</h3>
+                    <p class="card-text">
+                        כתיבת בדיקות אוטומטיות, בדיקות ידניות, בדיקות עומסים ושיפור איכות המערכת לאורך זמן.
+                    </p>
+                    <ul class="card-list">
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>בדיקות פונקציונליות וחוויית משתמש</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>בדיקות עומסים ויציבות</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>בדיקות אוטומטיות לתהליכים קריטיים</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>שיפור מתמשך לפי נתונים מהשטח</span>
+                        </li>
+                    </ul>
+                </article>
+
+                <article class="card">
+                    <div class="card-icon">🧠</div>
+                    <h3 class="card-title">ייעוץ טכנולוגי וליווי החלטות</h3>
+                    <p class="card-text">
+                        ליווי בבחירת טכנולוגיות, תכנון ארכיטקטורה, שילוב AI בתהליכים קיימים והגדרת תהליך עבודה
+                        טכנולוגי נכון לעסק.
+                    </p>
+                    <ul class="card-list">
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>בחירת טכנולוגיות שמתאימות לעסק שלך</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>תכנון תהליכי פיתוח ותחזוקה</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>שילוב AI בצורה מדויקת ולא מוגזמת</span>
+                        </li>
+                    </ul>
+                </article>
+
+                <article class="card">
+                    <div class="card-icon">🌐</div>
+                    <h3 class="card-title">פתרונות מותאמים לאנשים פרטיים</h3>
+                    <p class="card-text">
+                        פיתוח כלים אישיים, אוטומציות קטנות וסוכני AI שמשרתים אתכם ביום-יום – גם אם אתם לא עסק גדול.
+                    </p>
+                    <ul class="card-list">
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>כלים לניהול זמן ומשימות</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>סוכני AI אישיים ללמידה ולעבודה</span>
+                        </li>
+                        <li>
+                            <span class="card-list-bullet"></span>
+                            <span>אוטומציות קטנות שמפנות לכם זמן</span>
+                        </li>
+                    </ul>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advantages Section -->
+    <section id="advantages">
+        <div class="container fade-in">
+            <div class="section-header">
+                <h2 class="section-title">למה לבחור בי</h2>
+                <p class="section-subtitle">מה מבדל את העבודה איתי ומה תקבלו בתהליך</p>
+            </div>
+            <div class="advantages-grid">
+                <div class="advantage">
+                    <h3 class="advantage-title">חשיבה מערכתית מקצה לקצה</h3>
+                    <p class="advantage-text">
+                        אני לא מסתכלת רק על פיצ'ר או משימה – אלא על המערכת כולה, על התהליכים, על המשתמשים ועל
+                        ההשפעה העסקית. כך הפתרון נשאר יציב ורלוונטי לאורך זמן.
+                    </p>
+                </div>
+                <div class="advantage">
+                    <h3 class="advantage-title">שילוב AI בצורה חכמה</h3>
+                    <p class="advantage-text">
+                        סוכני AI ואוטומציות נבנים מתוך הבנה אמיתית של התהליך שלכם, ולא רק כי "זה טרנדי". המטרה היא
+                        לשפר יעילות, חוויית משתמש ודיוק – בלי להעמיס.
+                    </p>
+                </div>
+                <div class="advantage">
+                    <h3 class="advantage-title">דגש על איכות ויציבות</h3>
+                    <p class="advantage-text">
+                        בדיקות איכות, בדיקות עומסים ותכנון נכון של ארכיטקטורה – כדי שהמערכת שלכם תעמוד בעומס,
+                        תתפקד בצורה צפויה ותאפשר לכם לגדול בביטחון.
+                    </p>
+                </div>
+                <div class="advantage">
+                    <h3 class="advantage-title">תקשורת ברורה ושקופה</h3>
+                    <p class="advantage-text">
+                        אתם יודעים בכל רגע מה קורה בפרויקט, מה הסטטוס, מה הוחלט ומה הצעד הבא. בלי מונחים מסובכים
+                        שלא ברור מה המשמעות שלהם עבורכם.
+                    </p>
+                </div>
+                <div class="advantage">
+                    <h3 class="advantage-title">התאמה לעסקים ולאנשים פרטיים</h3>
+                    <p class="advantage-text">
+                        בין אם אתם עסק קטן, חברה או אדם פרטי – הפתרון נבנה סביבכם, סביב התקציב, הזמן והצרכים
+                        שלכם, ולא סביב טמפלט גנרי.
+                    </p>
+                </div>
+                <div class="advantage">
+                    <h3 class="advantage-title">ליווי אמיתי, לא רק פיתוח</h3>
+                    <p class="advantage-text">
+                        אני מלווה אתכם בהחלטות, מסבירה את האפשרויות, ומוודאת שהטכנולוגיה משרתת אתכם – ולא להפך.
+                        המטרה היא שתהיו רגועים ובטוחים לאורך כל הדרך.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process">
+        <div class="container fade-in">
+            <div class="section-header">
+                <h2 class="section-title">תהליך העבודה</h2>
+                <p class="section-subtitle">איך נראה פרויקט משותף איתי – מהשיחה הראשונה ועד ההשקה</p>
+            </div>
+            <div class="process-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">שיחת היכרות והבנת צרכים</h3>
+                    <p class="step-text">
+                        שיחה קצרה שבה אני לומדת אתכם, את העסק, את התהליכים ואת המטרות. מגדירים יחד מה חשוב,
+                        מה דחוף ומה החלום.
+                    </p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">אפיון וארכיטקטורה</h3>
+                    <p class="step-text">
+                        תכנון מסודר של המערכת, הסוכנים או האוטומציות: מסכים, תהליכים, חיבורים למערכות קיימות
+                        והגדרת חוויית משתמש.
+                    </p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">פיתוח, בדיקות ואוטומציות</h3>
+                    <p class="step-text">
+                        פיתוח בפועל של הפתרון, כולל בדיקות איכות, בדיקות עומסים והטמעת אוטומציות וסוכני AI
+                        בהתאם לצורך.
+                    </p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">השקה, ליווי ושיפור מתמשך</h3>
+                    <p class="step-text">
+                        העלאת המערכת לאוויר, ליווי בשימוש הראשוני, איסוף פידבק ושיפור מתמשך לפי מה שקורה
+                        באמת בשטח.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials">
+        <div class="container fade-in">
+            <div class="section-header">
+                <h2 class="section-title">המלצות לקוחות</h2>
+                <p class="section-subtitle">כמה מילים מלקוחות שעבדו איתי על מערכות, סוכני AI ואוטומציות</p>
+            </div>
+            <div class="testimonials-grid">
+                <article class="testimonial">
+                    <div class="testimonial-badge">“</div>
+                    <p class="testimonial-quote">
+                        "נעמה ליוותה אותנו משלב הרעיון ועד מערכת עובדת שמנהלת את כל התהליכים שלנו. היא ידעה
+                        לשאול את השאלות הנכונות, לתכנן נכון את הארכיטקטורה ולהסביר לנו כל צעד בדרך. היום המערכת
+                        חוסכת לנו שעות עבודה בכל שבוע."
+                    </p>
+                    <div class="testimonial-meta">
+                        <strong>יואב, בעל עסק בתחום השירותים</strong><br>
+                        מערכת ניהול תהליכים + אוטומציות
+                    </div>
+                </article>
+
+                <article class="testimonial">
+                    <div class="testimonial-badge">“</div>
+                    <p class="testimonial-quote">
+                        "הסוכן AI שנעמה בנתה לנו הפך להיות חלק מהצוות. הוא מסכם לנו מידע, עוזר לנו לענות ללקוחות
+                        ומפנה לנו זמן לדברים החשובים באמת. התהליך היה ברור, מקצועי ונעים."
+                    </p>
+                    <div class="testimonial-meta">
+                        <strong>דנה, מנהלת קהילה דיגיטלית</strong><br>
+                        סוכן AI מותאם אישית
+                    </div>
+                </article>
+
+                <article class="testimonial">
+                    <div class="testimonial-badge">“</div>
+                    <p class="testimonial-quote">
+                        "חיפשתי מישהי שתעזור לי לבנות אוטומציות קטנות לעסק שלי כעצמאית. נעמה ידעה לתרגם את מה
+                        שאני עושה ביום-יום לתהליכים דיגיטליים פשוטים שעובדים בשבילי. ההבדל בזמן ובשקט הנפשי
+                        הוא עצום."
+                    </p>
+                    <div class="testimonial-meta">
+                        <strong>מיכל, עצמאית בתחום הייעוץ</strong><br>
+                        אוטומציות ותהליכי עבודה דיגיטליים
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq">
+        <div class="container fade-in">
+            <div class="section-header">
+                <h2 class="section-title">שאלות נפוצות</h2>
+                <p class="section-subtitle">כמה תשובות לשאלות שחוזרות הרבה לפני שמתחילים לעבוד יחד</p>
+            </div>
+            <div class="faq-list">
+                <div>
+                    <div class="faq-item">
+                        <h3 class="faq-question">אני עסק קטן, זה בכלל מתאים לי?</h3>
+                        <p class="faq-answer">
+                            בהחלט. הרבה מהפתרונות שאני בונה מיועדים לעסקים קטנים ולעצמאיים – אוטומציות, סוכני AI
+                            וכלים קטנים שמפנים זמן ומשפרים את העבודה. אנחנו מתאימים את היקף הפרויקט לתקציב ולצרכים
+                            שלכם.
+                        </p>
+                    </div>
+                    <div class="faq-item">
+                        <h3 class="faq-question">האם חייבים להשתמש ב-AI בכל פרויקט?</h3>
+                        <p class="faq-answer">
+                            ממש לא. AI הוא כלי חזק, אבל הוא לא מתאים לכל דבר. יחד נבדוק איפה הוא יכול לעזור באמת,
+                            ואיפה פתרון "קלאסי" של תוכנה או אוטומציה פשוטה יהיה נכון יותר.
+                        </p>
+                    </div>
+                    <div class="faq-item">
+                        <h3 class="faq-question">איך נראה תהליך העבודה בפועל?</h3>
+                        <p class="faq-answer">
+                            מתחילים בשיחת היכרות, עוברים לאפיון וארכיטקטורה, ואז לפיתוח ובדיקות. בסוף משיקים את
+                            הפתרון וממשיכים לשפר לפי מה שקורה בשטח. לאורך כל הדרך אתם מעודכנים ומקבלים החלטות יחד
+                            איתי.
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <div class="faq-item">
+                        <h3 class="faq-question">מה לגבי תחזוקה ושינויים אחרי ההשקה?</h3>
+                        <p class="faq-answer">
+                            אפשר להגדיר מראש תקופת ליווי ותחזוקה, או לעבוד לפי צורך. חשוב לי שהמערכת תישאר רלוונטית
+                            ויציבה, ולכן אני מעודדת שיפור מתמשך ולא רק "פרויקט חד-פעמי".
+                        </p>
+                    </div>
+                    <div class="faq-item">
+                        <h3 class="faq-question">איך מתחילים?</h3>
+                        <p class="faq-answer">
+                            ממלאים את טופס יצירת הקשר או שולחים לי הודעה קצרה, ואחזור אליכם לשיחת היכרות קצרה
+                            ללא התחייבות. משם נחליט יחד אם וכאיך ממשיכים.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="container fade-in">
+            <div class="section-header">
+                <h2 class="section-title">יצירת קשר</h2>
+                <p class="section-subtitle">בואו נדבר על הרעיון, הצורך או החלום הטכנולוגי שלכם</p>
+            </div>
+            <div class="contact-layout">
+                <div class="contact-info">
+                    <p class="contact-info-row">
+                        <strong>איך אפשר לדבר איתי?</strong><br>
+                        השאירו פרטים בטופס ואני אחזור אליכם לשיחת היכרות קצרה, או שלחו לי הודעה בכל ערוץ שנוח לכם.
+                    </p>
+                    <p class="contact-info-row">
+                        <strong>סוגי פרויקטים:</strong><br>
+                        מערכות ואפליקציות, סוכני AI, אוטומציות, בדיקות איכות, ייעוץ טכנולוגי ופתרונות אישיים.
+                    </p>
+                    <p class="contact-info-row">
+                        <strong>קהל יעד:</strong><br>
+                        עסקים קטנים וגדולים, חברות, עצמאיים ואנשים פרטיים שרוצים לעבוד חכם יותר.
+                    </p>
+                    <div class="contact-highlight">
+                        <strong>שיחת היכרות ללא התחייבות</strong><br>
+                        בשיחה נבדוק יחד מה הצורך שלכם, מה אפשר לעשות, ומה הצעד הבא הנכון עבורכם – גם אם לא נמשיך
+                        לפרויקט מלא.
+                    </div>
+                </div>
+                <form id="contactForm">
+                    <!-- טופס יצירת קשר -->
+                    <div class="form-row">
+                        <label for="name">שם מלא</label>
+                        <input type="text" id="name" name="name" placeholder="איך לקרוא לך?" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="email">אימייל</label>
+                        <input type="email" id="email" name="email" placeholder="example@yourmail.com" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="type">אני</label>
+                        <input type="text" id="type" name="type" placeholder="עסק / אדם פרטי / חברה" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="message">מה הצורך או הרעיון שלך?</label>
+                        <textarea id="message" name="message" placeholder="ספרי/ספר לי בקצרה מה היית רוצה לבנות, לשפר או לאוטומט." required></textarea>
+                        <div class="form-note">
+                            אפשר לכתוב חופשי – גם אם זה עדיין לא מגובש. נעשה סדר יחד.
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <span>שליחת הטופס</span>
+                            <span class="btn-icon">✉️</span>
+                        </button>
+                        <button type="button" class="btn-secondary" data-scroll="hero">
+                            חזרה לראש העמוד
+                        </button>
+                    </div>
+                    <div class="form-success" id="formSuccess">
+                        <strong>תודה רבה!</strong> הטופס נשלח בהצלחה. אחזור אליך בהקדם לשיחת היכרות קצרה.
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="container footer-layout">
+        <div>
+            נעמה בן אריה – פיתוח תוכנה, סוכני AI, אוטומציות ובדיקות איכות.<br>
+            אתר SPA אחד, בעברית מלאה, מותאם לעסקים ולאנשים פרטיים.
+        </div>
+        <div class="footer-links">
+            <span class="footer-link" data-scroll="hero">ראשי</span>
+            <span class="footer-link" data-scroll="about">עליי</span>
+            <span class="footer-link" data-scroll="services">שירותים</span>
+            <span class="footer-link" data-scroll="contact">יצירת קשר</span>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // תפריט מובייל
+    const mobileToggle = document.getElementById('mobileToggle');
+    const mobileNav = document.getElementById('mobileNav');
+
+    mobileToggle.addEventListener('click', () => {
+        mobileToggle.classList.toggle('open');
+        mobileNav.classList.toggle('open');
+    });
+
+    // גלילה חלקה לכל הכפתורים עם data-scroll
+    function scrollToSection(id) {
+        const section = document.getElementById(id);
+        if (!section) return;
+        const headerOffset = 70; // מרווח קטן מתחת לתפריט
+        const rect = section.getBoundingClientRect();
+        const offsetTop = rect.top + window.scrollY - headerOffset;
+
+        window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth'
+        });
+    }
+
+    document.querySelectorAll('[data-scroll]').forEach(el => {
+        el.addEventListener('click', () => {
+            const target = el.getAttribute('data-scroll');
+            scrollToSection(target);
+            // סגירת תפריט מובייל אחרי בחירה
+            if (mobileNav.classList.contains('open')) {
+                mobileNav.classList.remove('open');
+                mobileToggle.classList.remove('open');
+            }
+        });
+    });
+
+    // טופס יצירת קשר – הודעת הצלחה
+    const contactForm = document.getElementById('contactForm');
+    const formSuccess = document.getElementById('formSuccess');
+
+    contactForm.addEventListener('submit', (event) => {
+        event.preventDefault(); // מניעת שליחה אמיתית
+        formSuccess.style.display = 'block';
+        formSuccess.style.opacity = '0';
+
+        // אנימציה עדינה להודעת הצלחה
+        setTimeout(() => {
+            formSuccess.style.transition = 'opacity 0.4s ease';
+            formSuccess.style.opacity = '1';
+        }, 50);
+
+        // ניקוי שדות הטופס
+        contactForm.reset();
+    });
+</script>
+</body>
+</html>
